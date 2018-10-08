@@ -1,0 +1,34 @@
+---
+title: "Colorado Highways"
+author: "cyorir"
+date: "October 8, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Colorado Highway Map
+
+This document uses open data from the Colorado Information Marketplace to create a map of Colorado's highways. The dataset contains the coordinates of Colorado's highway markers and is located at:
+
+https://data.colorado.gov/Transportation/Highway-Mileposts-in-Colorado/trm9-dm4m
+
+```{r highways}
+suppressMessages(library(dplyr))
+library(ggplot2)
+options(digits = 10)
+highways <- read.csv("MILE_MARKERS_GPS.csv")
+x <- lapply(as.character(highways$the_geom), strsplit, " ")
+x <- lapply(x, function(z) {z[[1]][2]})
+x <- lapply(as.character(x), strsplit, "\\(")
+x <- lapply(x, function(z) {as.numeric(z[[1]][2])})
+y <- lapply(as.character(highways$the_geom), strsplit, " ")
+y <- lapply(y, function(z) {z[[1]][3]})
+y <- lapply(as.character(y), strsplit, "\\)")
+y <- lapply(y, function(z) {as.numeric(z[[1]][1])})
+highways$x <- unlist(x)
+highways$y <- unlist(y)
+ggplot(highways, aes(x=x,y=y)) + geom_point(size=0.5)
+```
